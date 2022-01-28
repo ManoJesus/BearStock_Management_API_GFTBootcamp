@@ -5,8 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Data
@@ -15,17 +20,23 @@ public class BeerDTO {
     private Long id;
     @NotNull
     @NotEmpty
+    @Size(min = 1, max = 150)
     private String name;
     @NotNull
     @NotEmpty
+    @Size(min = 1, max = 150)
     private String brand;
     @NotNull
     @NotEmpty
+    @Max(500)
     private Integer max;
     @NotNull
     @NotEmpty
+    @Max(100)
     private Integer quantity;
+    @Enumerated(EnumType.STRING)
     @NotNull
     @NotEmpty
     private BeerType beerType;
+
 }
