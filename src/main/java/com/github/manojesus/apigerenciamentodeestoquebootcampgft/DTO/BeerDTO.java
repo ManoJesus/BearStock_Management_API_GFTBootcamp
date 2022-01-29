@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @AllArgsConstructor
 @Data
@@ -25,9 +22,11 @@ public class BeerDTO {
     private String brand;
     @NotNull
     @Max(500)
+    @Min(0)
     private Integer max;
     @NotNull
     @Max(100)
+    @Min(0)
     private Integer quantity;
     @Enumerated(EnumType.STRING)
     @NotNull

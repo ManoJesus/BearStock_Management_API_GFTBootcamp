@@ -75,11 +75,11 @@ public class BeerServiceImp implements BeerService{
     @Override
     public BeerDTO decrementBeerQuantity(Long id, Integer quantityToDecrement) throws BeerNotFoundException, BeerQuantityLowerThanZero {
         Beer toBeIncrementedBeer = verifyIfIdIsValid(id);
-        int quantityAfterDecrement = toBeIncrementedBeer.getQuantity() - quantityToDecrement;
+        int quantityAfterDecrement = toBeIncrementedBeer.getQuantity() + quantityToDecrement;
         if(quantityAfterDecrement >= 0 ){
             toBeIncrementedBeer.setQuantity(quantityAfterDecrement);
         }else {
-            throw new BeerQuantityLowerThanZero(id, toBeIncrementedBeer.getQuantity());
+            throw new BeerQuantityLowerThanZero(id, quantityAfterDecrement);
         }
         return beerMapper.toDTO(toBeIncrementedBeer);
     }
