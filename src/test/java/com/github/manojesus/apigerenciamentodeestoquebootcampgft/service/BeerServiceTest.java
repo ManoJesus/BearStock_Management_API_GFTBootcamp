@@ -138,21 +138,6 @@ public class BeerServiceTest {
         //then
         assertThrows(BeerNotFoundException.class, () ->beerService.deleteBeerById(expectedDeleteBeerDTO.getId()));
     }
-    @Test
-    void whenUpdateIsCalledWithValidIdThenItShouldReturnUpdatedBeer() throws BeerNotFoundException {
-        //given
-        BeerDTO toBeUpdatedBeerDTO = BeerDTOBuilder.builder().build().buildDTO();
-        Beer toBeUpdatedBeer = beerMapper.toModel(toBeUpdatedBeerDTO);
-
-        toBeUpdatedBeerDTO.setName("Skol");
-
-        //when
-        when(beerRepository.findById(toBeUpdatedBeer.getId())).thenReturn(Optional.of(toBeUpdatedBeer));
-
-        //then
-        BeerDTO updatedBeerDTO = beerService.updateBeer(toBeUpdatedBeer.getId(), toBeUpdatedBeerDTO);
-        assertThat(updatedBeerDTO.getName(), is(equalTo(toBeUpdatedBeerDTO.getName())));
-    }
 
     @Test
     void whenIncrementIsCalledThenBeerStockMustBeIncremented() throws BeerNotFoundException, BeerStockExceededException {

@@ -1,8 +1,10 @@
 package com.github.manojesus.apigerenciamentodeestoquebootcampgft.controller;
 
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.DTO.BeerDTO;
+import com.github.manojesus.apigerenciamentodeestoquebootcampgft.DTO.QuantityDTO;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.exception.BeerAlreadyExistsException;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.exception.BeerNotFoundException;
+import com.github.manojesus.apigerenciamentodeestoquebootcampgft.exception.BeerStockExceededException;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.service.BeerService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +41,10 @@ public class BeerController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBeer(@PathVariable Long beerID) throws BeerNotFoundException {
         beerService.deleteBeerById(beerID);
+    }
+
+    @PatchMapping("/{beerId}/increment")
+    public BeerDTO incrementQuantityOfBeer(@PathVariable Long beerId, @RequestBody @Valid QuantityDTO quantityDTO) throws BeerNotFoundException, BeerStockExceededException {
+        return beerService.incrementBeerQuantity(beerId, quantityDTO.getQuantity());
     }
 }

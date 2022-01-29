@@ -60,18 +60,6 @@ public class BeerServiceImp implements BeerService{
 
     @Transactional
     @Override
-    public BeerDTO updateBeer(Long id, BeerDTO beerDTOToBeUpdated) throws BeerNotFoundException {
-        Beer toBeUpdatedBeer = verifyIfIdIsValid(id);
-        if(!toBeUpdatedBeer.getName().equals(beerDTOToBeUpdated.getName())){
-            toBeUpdatedBeer.setName(beerDTOToBeUpdated.getName());
-        }else if(!toBeUpdatedBeer.getBrand().equals(beerDTOToBeUpdated.getBrand())){
-            toBeUpdatedBeer.setBrand(beerDTOToBeUpdated.getBrand());
-        }else if(toBeUpdatedBeer.getMax() != (int)beerDTOToBeUpdated.getMax()){
-            toBeUpdatedBeer.setMax(beerDTOToBeUpdated.getMax());
-        }
-        return beerMapper.toDTO(toBeUpdatedBeer);
-    }
-    @Transactional
     public BeerDTO incrementBeerQuantity(Long id, Integer quantityToIncrement) throws BeerNotFoundException, BeerStockExceededException {
         Beer toBeIncrementedBeer = verifyIfIdIsValid(id);
         int quantityAfterIncrement = quantityToIncrement + toBeIncrementedBeer.getQuantity();
@@ -84,6 +72,7 @@ public class BeerServiceImp implements BeerService{
         return beerMapper.toDTO(toBeIncrementedBeer);
     }
     @Transactional
+    @Override
     public BeerDTO decrementBeerQuantity(Long id, Integer quantityToDecrement) throws BeerNotFoundException, BeerQuantityLowerThanZero {
         Beer toBeIncrementedBeer = verifyIfIdIsValid(id);
         int quantityAfterDecrement = toBeIncrementedBeer.getQuantity() - quantityToDecrement;
