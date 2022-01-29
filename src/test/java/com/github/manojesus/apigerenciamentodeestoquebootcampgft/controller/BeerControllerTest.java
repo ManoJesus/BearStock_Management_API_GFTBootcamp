@@ -20,9 +20,8 @@ import java.util.Collections;
 
 import static com.github.manojesus.apigerenciamentodeestoquebootcampgft.utils.JsonConverterUtils.asJsonString;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -128,8 +127,26 @@ public class BeerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name", is(beerDTO.getName())))
                 .andExpect(jsonPath("$[0].brand", is(beerDTO.getBrand())))
-                .andExpect(jsonPath("$[0].type", is(beerDTO.getBeerType().toString())));
+                .andExpect(jsonPath("$[0].beerType", is(beerDTO.getBeerType().toString())));
     }
+    @Test
+    void whenDELETEIsCalledWithValidIdThenNoContentReturn() throws Exception {
+        //when
+        doNothing().when(beerService).deleteBeerById(VALID_BEER_ID);
 
+        //then
+        mockMvc.perform(delete(BEER_API_URL_PATH+"/"+VALID_BEER_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+    @Test
+    void whenDELETEIsCalledWithInvalidIdThenNotFoundReturn() throws Exception {
+        //when
+        doThrow(BeerNotFoundException.class).when(beerService).deleteBeerById(INVALID_BEER_ID);
 
+        //then
+        mockMvc.perform(delete(BEER_API_URL_PATH+"/"+INVALID_BEER_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
