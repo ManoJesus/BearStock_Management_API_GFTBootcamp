@@ -2,32 +2,29 @@ package com.github.manojesus.apigerenciamentodeestoquebootcampgft.controller;
 
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.DTO.BeerDTO;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.builderDTO.BeerDTOBuilder;
-import com.github.manojesus.apigerenciamentodeestoquebootcampgft.exception.BeerAlreadyExistsException;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.exception.BeerNotFoundException;
 import com.github.manojesus.apigerenciamentodeestoquebootcampgft.service.BeerService;
-import com.github.manojesus.apigerenciamentodeestoquebootcampgft.utils.JsonConverterUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import static com.github.manojesus.apigerenciamentodeestoquebootcampgft.utils.JsonConverterUtils.*;
-import static org.mockito.Mockito.*;
+import java.util.Collections;
+
+import static com.github.manojesus.apigerenciamentodeestoquebootcampgft.utils.JsonConverterUtils.asJsonString;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class BeerControllerTest {
@@ -75,7 +72,7 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.beerType", is(toBeSavedBeerDTO.getBeerType().toString())));
     }
     @Test
-    void whenPOSTIsCalledWithNullRequiredParameter() throws Exception {
+    void whenPOSTIsCalledWithNullRequiredParameterThenBadRequest() throws Exception {
         //given
         BeerDTO toBeSavedBeerDTO = BeerDTOBuilder.builder().build().buildDTO();
         toBeSavedBeerDTO.setName(null);
@@ -102,8 +99,9 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.name",is(toBeGotBeerDTO.getName())))
                 .andExpect(jsonPath("$.brand",is(toBeGotBeerDTO.getBrand())));
     }
+
     @Test
-    void whenGETCalledWithNameNotRegisteredThenThrowException() throws Exception {
+    void whenGETCalledWithNameNotRegisteredThenNotFoundIsReturn() throws Exception {
         //given
         BeerDTO toBeGotBeerDTO = BeerDTOBuilder.builder().build().buildDTO();
 
@@ -115,6 +113,22 @@ public class BeerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
+    }
+    @Test
+    void whenGETListWithBeerSIsCalledThenOkStatusIsReturn() throws Exception {
+        //given
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().buildDTO();
+
+        //when
+        when(beerService.searchAllBeers()).thenReturn(Collections.singletonList(beerDTO));
+
+        //then
+        mockMvc.perform(get(BEER_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name", is(beerDTO.getName())))
+                .andExpect(jsonPath("$[0].brand", is(beerDTO.getBrand())))
+                .andExpect(jsonPath("$[0].type", is(beerDTO.getBeerType().toString())));
     }
 
 
